@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Simulado SAEB-BA</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    padding:20px;
+}
+.container{
+    max-width:950px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+h1{
+    text-align:center;
+}
+.question{
+    margin-bottom:30px;
+    padding:15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+.question-header{
+    background:#f1f1f1;
+    padding:10px;
+    border-radius:5px;
+    font-size:13px;
+    margin-bottom:10px;
+    line-height:1.4;
+}
+.progress-container{
+    width:100%;
+    background:#ddd;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+.progress-bar{
+    height:15px;
+    width:0%;
+    background:#2e7d32;
+    border-radius:10px;
+    transition:0.3s;
+}
+button{
+    padding:10px 15px;
+    background:#2e7d32;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+button:hover{
+    background:#1b5e20;
+}
+.result{
+    margin-top:20px;
+    font-weight:bold;
+}
+.correct{color:green;}
+.wrong{color:red;}
+footer{
+    margin-top:30px;
+    text-align:center;
+    font-size:14px;
+    color:#555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Simulado IBFC - SAEB/BA</h1>
+
+<div class="progress-container">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div id="quiz"></div>
+
+<button onclick="submitQuiz()">Finalizar Simulado</button>
+
+<div class="result" id="result"></div>
+
+<footer>
+DESENVOLVIDO POR <strong>EDMILE LOPES</strong>
+</footer>
+</div>
+
+<script>
+
+const questions = [
+
+{
+header: "1 - Q1134504 | Direito Penal Militar | Espécies de Crimes Militares | Crimes Contra a Administração Militar | Ano: 2020 | Banca: IBFC | Órgão: SAEB-BA | Prova: Soldado",
+question: "A ofensa à dignidade ou ao decoro são elementares que se fazem presentes expressamente no crime militar de:",
+options: [
+"A) desacato a assemelhado ou funcionário",
+"B) ingresso clandestino",
+"C) desacato a superior",
+"D) desobediência",
+"E) desacato a militar"
+],
+answer: 4
+},
+
+{
+header: "2 - Q1134502 | Direito Penal Militar | Crimes Contra a Administração Militar | Ano: 2020 | Banca: IBFC | Órgão: SAEB-BA | Prova: Soldado",
+question: "O ato de retardar ou deixar de praticar indevidamente ato de ofício, para satisfazer interesse ou sentimento pessoal, configura o crime militar de:",
+options: [
+"A) abuso de confiança",
+"B) condescendência criminosa",
+"C) omissão de dever funcional",
+"D) retardamento de ato de ofício",
+"E) prevaricação"
+],
+answer: 4
+},
+
+{
+header: "3 - Q1134501 | Direito Penal Militar | Crimes Contra a Autoridade ou Disciplina Militar | Ano: 2020 | Banca: IBFC | Órgão: SAEB-BA | Prova: Soldado",
+question: "Sobre o que configura conduta típica do crime de recusa de obediência, assinale a alternativa correta:",
+options: [
+"A) desrespeitar superior diante de outro militar",
+"B) despojar-se de uniforme, por menosprezo",
+"C) recusar obedecer a ordem do superior sobre matéria de serviço",
+"D) promover reunião para discutir ato de superior",
+"E) praticar ato que se traduza em ultraje a símbolo nacional"
+],
+answer: 2
+},
+
+{
+header: "4 - Q1134500 | Direito Penal Militar | Crimes Contra a Autoridade ou Disciplina Militar | Ano: 2020 | Banca: IBFC | Órgão: SAEB-BA | Prova: Soldado",
+question: "Sobre o que constitui a conduta típica de crime militar de motim, assinale a alternativa correta:",
+options: [
+"A) dois militares armados praticando violência fora da administração militar",
+"B) militares desarmados agindo contra a ordem recebida",
+"C) mais de dois militares com material bélico praticando violência",
+"D) deixar de comunicar conspiração",
+"E) militares armados recusando obediência e praticando violência"
+],
+answer: 4
+},
+
+{
+header: "5 - Q1134499 | Direito Penal | Crimes contra a honra - Injúria | Ano: 2020 | Banca: IBFC | Órgão: SAEB-BA | Prova: Soldado",
+question: "Sobre a injúria racial, assinale a alternativa correta:",
+options: [
+"A) Tem como bem jurídico a dignidade da coletividade",
+"B) Trata-se de ação penal pública incondicionada",
+"C) É imprescritível",
+"D) Cabe fiança",
+"E) A pena é detenção de um a seis meses ou multa"
+],
+answer: 1
+}
+
+];
+
+function loadQuiz(){
+let quiz = document.getElementById("quiz");
+
+for(let i = 0; i < questions.length; i++){
+
+let q = questions[i];
+
+let div = document.createElement("div");
+div.className = "question";
+
+div.innerHTML += "<div class='question-header'>" + q.header + "</div>";
+div.innerHTML += "<p><strong>" + q.question + "</strong></p>";
+
+for(let j = 0; j < q.options.length; j++){
+div.innerHTML += 
+"<label><input type='radio' name='question" + i + 
+"' value='" + j + "' onchange='updateProgress()'> " 
++ q.options[j] + "</label><br>";
+}
+
+quiz.appendChild(div);
+}
+}
+
+function updateProgress(){
+let answered = 0;
+
+for(let i = 0; i < questions.length; i++){
+let radios = document.getElementsByName("question" + i);
+for(let j = 0; j < radios.length; j++){
+if(radios[j].checked){
+answered++;
+break;
+}
+}
+}
+
+let percent = (answered / questions.length) * 100;
+document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function submitQuiz(){
+let score = 0;
+let feedback = "";
+
+for(let i = 0; i < questions.length; i++){
+
+let radios = document.getElementsByName("question" + i);
+let selected = null;
+
+for(let j = 0; j < radios.length; j++){
+if(radios[j].checked){
+selected = radios[j];
+break;
+}
+}
+
+if(selected){
+if(parseInt(selected.value) === questions[i].answer){
+score++;
+feedback += "<p class='correct'>Questão " + (i+1) + ": Correta ✅</p>";
+}else{
+feedback += "<p class='wrong'>Questão " + (i+1) + 
+": Errada ❌ | Gabarito: " + questions[i].options[questions[i].answer] + "</p>";
+}
+}else{
+feedback += "<p class='wrong'>Questão " + (i+1) + 
+": Não respondida ❌ | Gabarito: " + questions[i].options[questions[i].answer] + "</p>";
+}
+}
+
+document.getElementById("result").innerHTML =
+"Você acertou " + score + " de " + questions.length + " questões.<br><br>" + feedback;
+}
+
+loadQuiz();
+
+</script>
+
+</body>
+</html>
